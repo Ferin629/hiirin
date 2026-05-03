@@ -1,7 +1,6 @@
-baseURL: "https://你的帳號.github.io/hiirin/"
+baseURL: "https://Ferin629.github.io/hiirin/"
 languageCode: "zh-TW"
 title: "緋凜這個人"
-theme: ""
 
 pagination:
   pagerSize: 10
