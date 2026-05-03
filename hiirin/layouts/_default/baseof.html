@@ -441,8 +441,130 @@ footer p {
   .posts-wrap { padding: 0 0 3rem; }
   .post-body { padding: 2rem 1.5rem 3rem; }
 }
+/* ===== SEARCH ===== */
+.search-box {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 0.5px solid var(--rose-border);
+  padding: 4px 12px;
+  background: transparent;
+  transition: border-color 0.2s;
+}
+
+.search-box:focus-within {
+  border-color: var(--rose);
+}
+
+.search-box svg {
+  color: var(--brown-faint);
+  flex-shrink: 0;
+}
+
+#search-input {
+  border: none;
+  background: transparent;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 300;
+  letter-spacing: 0.12em;
+  color: var(--brown-text);
+  outline: none;
+  width: 120px;
+}
+
+#search-input::placeholder {
+  color: var(--brown-faint);
+}
+
+#search-results {
+  position: absolute;
+  top: 100%;
+  right: 2.5rem;
+  width: 280px;
+  background: var(--bg-card);
+  border: 0.5px solid var(--line);
+  z-index: 100;
+  display: none;
+  flex-direction: column;
+}
+
+#search-results a {
+  padding: 0.9rem 1.2rem;
+  text-decoration: none;
+  border-bottom: 0.5px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  transition: background 0.15s;
+}
+
+#search-results a:hover { background: var(--rose-pale); }
+
+#search-results .r-title {
+  font-size: 0.82rem;
+  color: var(--brown-deep);
+  letter-spacing: 0.06em;
+}
+
+#search-results .r-tag {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--rose);
+}
+
+#search-results .no-result {
+  padding: 1rem 1.2rem;
+  font-family: 'Noto Sans TC', sans-serif;
+  font-size: 0.78rem;
+  color: var(--brown-faint);
+}
 </style>
 </head>
+<div id="search-results"></div>
+<script>
+(async () => {
+  const input = document.getElementById('search-input');
+  const results = document.getElementById('search-results');
+  if (!input) return;
+
+  let data = [];
+  try {
+    const res = await fetch('{{ .Site.BaseURL }}index.json');
+    data = await res.json();
+  } catch(e) {}
+
+  input.addEventListener('input', () => {
+    const q = input.value.trim().toLowerCase();
+    if (!q) { results.style.display = 'none'; return; }
+
+    const matched = data.filter(p =>
+      p.title.toLowerCase().includes(q) ||
+      (p.summary && p.summary.toLowerCase().includes(q)) ||
+      (p.tags && p.tags.join(' ').toLowerCase().includes(q))
+    ).slice(0, 6);
+
+    if (matched.length === 0) {
+      results.innerHTML = '<div class="no-result">找不到相關文章</div>';
+    } else {
+      results.innerHTML = matched.map(p => `
+        <a href="${p.permalink}">
+          <span class="r-title">${p.title}</span>
+          <span class="r-tag">${(p.tags||[]).join(' · ')}</span>
+        </a>
+      `).join('');
+    }
+    results.style.display = 'flex';
+  });
+
+  document.addEventListener('click', e => {
+    if (!e.target.closest('.search-box') && !e.target.closest('#search-results')) {
+      results.style.display = 'none';
+    }
+  });
+})();
+</script>
 <body>
 
 <header>
@@ -460,12 +582,14 @@ footer p {
       <span>{{ .Site.Params.subtitle }}</span>
     </div>
   </div>
-  <nav>
+ <nav>
     <a href="{{ .Site.BaseURL }}posts/">文章</a>
-    <a href="{{ .Site.BaseURL }}tags/筆記/">筆記</a>
-    <a href="{{ .Site.BaseURL }}tags/分享/">分享</a>
     <a href="{{ .Site.BaseURL }}about/">關於</a>
-  </nav>
+    <div class="search-box">
+      <input type="text" id="search-input" placeholder="搜尋…" autocomplete="off">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    </div>
+    </nav>
 </header>
 
 <main>

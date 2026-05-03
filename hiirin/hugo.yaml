@@ -8,3 +8,8 @@ pagination:
 params:
   description: "感想 · 筆記 · 所見所聞"
   subtitle: "thoughts · notes · fragments"
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
