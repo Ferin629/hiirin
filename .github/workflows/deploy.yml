@@ -4,17 +4,29 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: write
+
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: peaceiris/actions-hugo@v3
         with:
-          hugo-version: 'latest'
+          submodules: true
+          fetch-depth: 0
+
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: '0.124.1'
           extended: true
-      - run: hugo --minify --baseURL "https://Ferin629.github.io/hiirin/"
-      - uses: peaceiris/actions-gh-pages@v4
+
+      - name: Build
+        run: hugo --minify --baseURL "https://Ferin629.github.io/hiirin/"
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v4
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./public
