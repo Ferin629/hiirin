@@ -1,0 +1,11 @@
+baseURL: "https://你的帳號.github.io/hiirin/"
+languageCode: "zh-TW"
+title: "緋凜這個人"
+theme: ""
+
+pagination:
+  pagerSize: 10
+
+params:
+  description: "感想 · 筆記 · 所見所聞"
+  subtitle: "thoughts · notes · fragments"

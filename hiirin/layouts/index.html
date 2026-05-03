@@ -1,0 +1,60 @@
+{{ define "main" }}
+
+<section class="hero">
+  <div class="hero-text">
+    <h2>閱讀，是為了<br><em>與自己對話</em>。</h2>
+    <p>這裡收錄了緋凜讀過的文章、看過的影片，<br>
+    以及那些內容在心裡留下的印記。<br>
+    也有一些生活經驗與隨手記下的筆記。</p>
+  </div>
+  <div class="hero-deco">
+    <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <polygon points="42,6 78,6 114,42 114,78 78,114 42,114 6,78 6,42" stroke="#b07068" stroke-width="1.5" fill="none"/>
+      <polygon points="50,16 70,16 104,50 104,70 70,104 50,104 16,70 16,50" stroke="#b07068" stroke-width="0.8" fill="none" opacity="0.5"/>
+      <circle cx="60" cy="60" r="26" stroke="#b07068" stroke-width="0.8" stroke-dasharray="2.5 3" fill="none"/>
+      <circle cx="60" cy="60" r="17" stroke="#b07068" stroke-width="0.5" fill="none" opacity="0.4"/>
+      <line x1="60" y1="8" x2="60" y2="112" stroke="#b07068" stroke-width="0.4" opacity="0.2"/>
+      <line x1="8" y1="60" x2="112" y2="60" stroke="#b07068" stroke-width="0.4" opacity="0.2"/>
+    </svg>
+  </div>
+</section>
+
+<div class="divider"><span>recent writings</span></div>
+
+{{ $posts := where .Site.RegularPages "Section" "posts" }}
+{{ $posts = $posts.ByDate.Reverse }}
+
+<div class="posts-wrap">
+  {{ range $i, $post := $posts }}
+    {{ if eq $i 0 }}
+    <a class="card featured" href="{{ $post.RelPermalink }}">
+      <div class="featured-accent"></div>
+      <div class="featured-body">
+        <span class="tag">{{ with $post.Params.tags }}{{ index . 0 }}{{ end }}</span>
+        <h2 class="card-title">{{ $post.Title }}</h2>
+        <p class="card-excerpt">{{ $post.Summary }}</p>
+        <div class="card-meta">{{ $post.Date.Format "2006 · 01 · 02" }} · 約 {{ div (len $post.Content) 500 | add 1 }} 分鐘閱讀</div>
+      </div>
+    </a>
+    {{ else }}
+    <a class="card" href="{{ $post.RelPermalink }}">
+      <span class="tag">{{ with $post.Params.tags }}{{ index . 0 }}{{ end }}</span>
+      <h3 class="card-title">{{ $post.Title }}</h3>
+      <p class="card-excerpt">{{ $post.Summary }}</p>
+      <div class="card-meta">{{ $post.Date.Format "2006 · 01 · 02" }}</div>
+    </a>
+    {{ end }}
+  {{ end }}
+</div>
+
+<div class="about">
+  <div class="about-inner">
+    <div class="about-mark">"</div>
+    <div class="about-content">
+      <h4>about this place</h4>
+      <p>這裡是緋凜的個人空間。寫文章、整理筆記、分享看見的東西所帶來的感受。沒有固定主題，只有真實的想法。</p>
+    </div>
+  </div>
+</div>
+
+{{ end }}

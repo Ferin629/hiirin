@@ -1,0 +1,28 @@
+{{ define "main" }}
+
+<article>
+  <div class="post-header">
+    <span class="tag">{{ with .Params.tags }}{{ index . 0 }}{{ end }}</span>
+    <h1>{{ .Title }}</h1>
+    <div class="meta">{{ .Date.Format "2006 · 01 · 02" }}</div>
+  </div>
+
+  {{ with .Params.cover }}
+  <img class="post-cover" src="{{ . }}" alt="{{ $.Title }}">
+  {{ end }}
+
+  <div class="post-body">
+    {{ .Content }}
+  </div>
+
+  <!-- Google AdSense 廣告位（審核通過後在此貼上廣告碼） -->
+  <div class="ad-slot">
+    <!-- adsense-placeholder -->
+  </div>
+
+  <div class="post-back">
+    <a href="{{ .Site.BaseURL }}">← 回首頁</a>
+  </div>
+</article>
+
+{{ end }}
