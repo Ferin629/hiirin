@@ -19,26 +19,45 @@
   </div>
 </section>
 
+<!-- TAG 篩選列 -->
+<div class="tag-filter">
+  <button class="filter-btn active" data-tag="all">全部</button>
+  <button class="filter-btn" data-tag="感想">感想</button>
+  <button class="filter-btn" data-tag="筆記">筆記</button>
+  <button class="filter-btn" data-tag="分享">分享</button>
+</div>
+
 <div class="divider"><span>recent writings</span></div>
 
 {{ $posts := where .Site.RegularPages "Section" "posts" }}
 {{ $posts = $posts.ByDate.Reverse }}
 
-<div class="posts-wrap">
+<div class="posts-wrap" id="posts-grid">
   {{ range $i, $post := $posts }}
+    {{ $firstTag := "" }}
+    {{ with $post.Params.tags }}{{ $firstTag = index . 0 }}{{ end }}
+
     {{ if eq $i 0 }}
-    <a class="card featured" href="{{ $post.RelPermalink }}">
+    <a class="card featured" href="{{ $post.RelPermalink }}" data-tags="{{ range $post.Params.tags }}{{ . }} {{ end }}">
       <div class="featured-accent"></div>
       <div class="featured-body">
-        <span class="tag">{{ with $post.Params.tags }}{{ index . 0 }}{{ end }}</span>
+        <div class="card-tags">
+          {{ range $post.Params.tags }}
+          <a href="{{ $.Site.BaseURL }}tags/{{ . | urlize }}/" class="tag tag-link">{{ . }}</a>
+          {{ end }}
+        </div>
         <h2 class="card-title">{{ $post.Title }}</h2>
         <p class="card-excerpt">{{ $post.Summary }}</p>
         <div class="card-meta">{{ $post.Date.Format "2006 · 01 · 02" }} · 約 {{ div (len $post.Content) 500 | add 1 }} 分鐘閱讀</div>
       </div>
     </a>
     {{ else }}
-    <a class="card" href="{{ $post.RelPermalink }}">
-      <span class="tag">{{ with $post.Params.tags }}{{ index . 0 }}{{ end }}</span>
+    <a class="card" href="{{ $post.RelPermalink }}" data-tags="{{ range $post.Params.tags }}{{ . }} {{ end }}">
+      <div class="card-tags">
+        {{ range $post.Params.tags }}
+        <a href="{{ $.Site.BaseURL }}tags/{{ . | urlize }}/" class="tag tag-link">{{ . }}</a>
+        {{ end }}
+      </div>
       <h3 class="card-title">{{ $post.Title }}</h3>
       <p class="card-excerpt">{{ $post.Summary }}</p>
       <div class="card-meta">{{ $post.Date.Format "2006 · 01 · 02" }}</div>
@@ -56,5 +75,30 @@
     </div>
   </div>
 </div>
+
+<script>
+const btns = document.querySelectorAll('.filter-btn');
+const cards = document.querySelectorAll('#posts-grid .card');
+
+btns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    btns.forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const tag = btn.dataset.tag;
+    cards.forEach(card => {
+      if (tag === 'all' || card.dataset.tags.includes(tag)) {
+        card.style.display = '';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  });
+});
+
+document.querySelectorAll('.tag-link').forEach(link => {
+  link.addEventListener('click', e => e.stopPropagation());
+});
+</script>
 
 {{ end }}
