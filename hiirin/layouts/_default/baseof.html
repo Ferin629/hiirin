@@ -531,7 +531,7 @@ footer p {
 
   let data = [];
   try {
-    const res = await fetch('{{ .Site.BaseURL }}index.json');
+    const res = await fetch('/hiirin/index.json');
     data = await res.json();
   } catch(e) {}
 
