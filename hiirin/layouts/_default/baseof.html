@@ -523,27 +523,45 @@ footer p {
 }
 </style>
 </head>
+<body>
+
+<header>
+  ...
+</header>
+
 <div id="search-results"></div>
+
+<main>
+  {{ block "main" . }}{{ end }}
+</main>
+
+<footer>
+  ...
+</footer>
+
 <script>
 (async () => {
   const input = document.getElementById('search-input');
   const results = document.getElementById('search-results');
-  if (!input) return;
+  if (!input || !results) return;
 
   let data = [];
   try {
-    const res = await fetch('/hiirin/index.json');
+    const res = await fetch('{{ "index.json" | relURL }}');
+    if (!res.ok) throw new Error(`Search index request failed: ${res.status}`);
     data = await res.json();
-  } catch(e) {}
+  } catch (e) {
+    console.warn('Search index could not be loaded.', e);
+  }
 
   input.addEventListener('input', () => {
     const q = input.value.trim().toLowerCase();
     if (!q) { results.style.display = 'none'; return; }
 
     const matched = data.filter(p =>
-      p.title.toLowerCase().includes(q) ||
-      (p.summary && p.summary.toLowerCase().includes(q)) ||
-      (p.tags && p.tags.join(' ').toLowerCase().includes(q))
+      (p.title || '').toLowerCase().includes(q) ||
+      (p.summary || '').toLowerCase().includes(q) ||
+      ((p.tags || []).join(' ')).toLowerCase().includes(q)
     ).slice(0, 6);
 
     if (matched.length === 0) {
@@ -552,7 +570,7 @@ footer p {
       results.innerHTML = matched.map(p => `
         <a href="${p.permalink}">
           <span class="r-title">${p.title}</span>
-          <span class="r-tag">${(p.tags||[]).join(' · ')}</span>
+          <span class="r-tag">${(p.tags || []).join(' · ')}</span>
         </a>
       `).join('');
     }
@@ -566,7 +584,8 @@ footer p {
   });
 })();
 </script>
-<body>
+</body>
+</html>
 
 <header>
   <div class="logo-area">
